@@ -4,12 +4,22 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Field {
-    char[][] field = new char[9][9];
+    char[][] fieldBack = new char[9][9];
+    char[][] fieldFront = new char[9][9];
     private final int mines;
+    boolean status;
+    int wrongMarks;
+    int minesCheck;
 
-    public Field(int mines) {
+    public Field(int mines, boolean status) {
         this.mines = mines;
-        for (char[] chars : field) {
+        int minesCheck = mines;
+        this.status = status;
+        for (char[] chars : fieldBack) {
+            Arrays.fill(chars, '.');
+        }
+
+        for (char[] chars : fieldFront) {
             Arrays.fill(chars, '.');
         }
 
@@ -20,20 +30,21 @@ public class Field {
             int mineX = random.nextInt(9);
             int mineY = random.nextInt(9);
 
-            if (field[mineX][mineY] !='X') {
-                field[mineX][mineY] = 'X';
+            if (fieldBack[mineX][mineY] !='X') {
+                fieldBack[mineX][mineY] = 'X';
                 numberOfMines++;
             }
         }
 
         // Providing hint on the number of mines around the empty cells
-        for (int i = 0; i < field.length; i++) {
-            for (int j = 0; j < field[i].length; j++) {
-               if (field[i][j] != 'X') {
+        for (int i = 0; i < fieldBack.length; i++) {
+            for (int j = 0; j < fieldBack[i].length; j++) {
+               if (fieldBack[i][j] != 'X') {
                    int hint = countMines(i, j);
 
                    if (hint != 0) {
-                       field[i][j] = Character.forDigit(hint, 10);
+                       fieldBack[i][j] = Character.forDigit(hint, 10);
+                       fieldFront[i][j] = Character.forDigit(hint, 10);
                    }
                }
             }
@@ -45,7 +56,7 @@ public class Field {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 try {
-                    if (field[row + i][col + j] == 'X') {
+                    if (fieldBack[row + i][col + j] == 'X') {
                         hint++;
                     }
                 } catch (ArrayIndexOutOfBoundsException ignore) {
@@ -55,16 +66,45 @@ public class Field {
         return hint;
     }
 
-    void printField() {
+    void printFrontField() {
         System.out.println(" |123456789|");
         System.out.println("-|---------|");
-        for (char[] arr : field) {
+        int i = 1;
+        for (char[] arr : fieldFront) {
+            System.out.print(i++ + "|");
             for (char chr : arr) {
                 System.out.print(chr);
             }
+            System.out.print("|");
             System.out.println();
         }
+        System.out.println("-|---------|");
     }
 
+    String checkCell(int row, int col) {
+       if (fieldBack[row][col] == 'X') {
+           fieldBack[row][col] = '*';
+           fieldFront[row][col] = '*';
+           minesCheck--;
+           return "found X";
+       } else if (fieldBack[row][col] >= 1 && fieldBack[row][col] <= mines) {
+           return "found Number";
+        } else if (fieldBack[row][col] == '*') {
+           fieldBack[row][col] = '.';
+           fieldFront[row][col] = '.';
+           wrongMarks--;
+           return "remove miss";
+       }  else {
+           fieldBack[row][col] = '*';
+           fieldFront[row][col] = '*';
+           wrongMarks++;
+           return "missed";
+       }
+    }
 
+    void isGameOver() {
+        if (minesCheck == 0 && wrongMarks == 0) {
+            status = false;
+        }
+    }
 }
