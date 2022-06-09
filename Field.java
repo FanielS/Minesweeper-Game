@@ -56,6 +56,8 @@ public class Field {
     }
 
     void printField() {
+        System.out.println(" |123456789|");
+        System.out.println("-|---------|");
         for (char[] arr : field) {
             for (char chr : arr) {
                 System.out.print(chr);
