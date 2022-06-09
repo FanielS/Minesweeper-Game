@@ -6,14 +6,12 @@ import java.util.Random;
 public class Field {
     char[][] fieldBack = new char[9][9];
     char[][] fieldFront = new char[9][9];
-    private final int mines;
+    private int mines;
     boolean status;
     int wrongMarks;
-    int minesCheck;
 
     public Field(int mines, boolean status) {
         this.mines = mines;
-        int minesCheck = mines;
         this.status = status;
         for (char[] chars : fieldBack) {
             Arrays.fill(chars, '.');
@@ -85,9 +83,9 @@ public class Field {
        if (fieldBack[row][col] == 'X') {
            fieldBack[row][col] = '*';
            fieldFront[row][col] = '*';
-           minesCheck--;
+           mines -= 1;
            return "found X";
-       } else if (fieldBack[row][col] >= 1 && fieldBack[row][col] <= mines) {
+       } else if (fieldBack[row][col] >= '1' && fieldBack[row][col] <= '8') {
            return "found Number";
         } else if (fieldBack[row][col] == '*') {
            fieldBack[row][col] = '.';
@@ -103,7 +101,7 @@ public class Field {
     }
 
     void isGameOver() {
-        if (minesCheck == 0 && wrongMarks == 0) {
+        if (mines == 0 && wrongMarks == 0) {
             status = false;
         }
     }
