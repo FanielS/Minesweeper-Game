@@ -9,24 +9,24 @@ public class Main {
         System.out.print("How many mines do you want on the field? ");
         int mines = in.nextInt();
         Field game = new Field(mines, true);
-        game.printFrontField();
+        game.printField();
 
-        while (game.status) {
-            System.out.print("Set/delete mines marks (x and y coordinates): ");
-            int y = in.nextInt() - 1;
-            int x = in.nextInt() - 1;
+            while (game.status) {
+                game.printField();
 
-            switch (game.checkCell(x, y)) {
-                case "found X":
-                case "remove miss":
-                case "missed":
-                    game.printFrontField();
-                    break;
-                case "found Number":
-                    System.out.println("There is a number here!");
+                try {
+                    System.out.println("Set/unset mines marks or claim a cell as free:");
+
+                    String[] c = in.nextLine().split(" ");
+
+                    if (game.check(Integer.parseInt(c[1]) - 1, Integer.parseInt(c[0]) - 1)) {
+                        game.move(Integer.parseInt(c[1]) - 1, Integer.parseInt(c[0]) - 1, c[2]);
+                    }
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("ERROR : Incorrect Input");
+                }
+
             }
-            game.isGameOver();
         }
-        System.out.println("Congratulations! You found all mines!");
     }
-}
